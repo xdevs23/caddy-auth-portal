@@ -259,8 +259,10 @@ func (b *Backend) fetchClaims(tokenData map[string]interface{}) (map[string]inte
 		m["groups"] = userGroups
 	}
 	
-	if _, exists := m["username"]; !exists {
-		m["username"] = filterStringReturningAZ09(m["email"].(string))
+	for _, possibleReplacement := range []string{"email", "mail", "name", "sub"} {
+		if _, exists := m[possibleReplacement]; !exists {
+			m["username"] = filterStringReturningAZ09(m[possibleReplacement].(string))
+		}
 	}
 	return m, nil
 }
