@@ -36,6 +36,11 @@ var PageTemplates = map[string]string{
     {{ if eq .Data.ui_options.custom_css_required "yes" }}
     <link rel="stylesheet" href="{{ pathjoin .ActionEndpoint "/assets/css/custom.css" }}" />
     {{ end }}
+    <style>
+    	.text--small {
+		font-size: 12px;
+	}
+    </style>
   </head>
   <body class="app-body">
     <div class="container">
@@ -135,6 +140,7 @@ var PageTemplates = map[string]string{
             {{ end }}
           </div>
           {{ end }}
+	  <p class="text--small">By logging in using one of the buttons above, you show that you've read, understood and agreed to our <a href="/_/privacy-policy" target="_blank">Privacy Policy</a> and consent to the processing of your data according to it.</p>
         </div>
       </div>
     </div>
