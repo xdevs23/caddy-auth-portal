@@ -260,7 +260,7 @@ func (b *Backend) fetchClaims(tokenData map[string]interface{}) (map[string]inte
 	}
 	
 	if _, exists := m["username"]; !exists {
-		m["username"] = filterStringReturningAZ09(m["email"])
+		m["username"] = filterStringReturningAZ09(m["email"].(string))
 	}
 	return m, nil
 }
