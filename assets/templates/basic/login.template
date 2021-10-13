@@ -117,6 +117,7 @@
             {{ end }}
           </div>
           {{ end }}
+	  <p class="text--small">By logging in using one of the buttons above, you show that you've read, understood and agreed to our <a href="/_/privacy-policy" target="_blank">Privacy Policy</a> and consent to the processing of your data according to it.</p>
         </div>
       </div>
     </div>
