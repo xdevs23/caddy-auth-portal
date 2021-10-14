@@ -24,6 +24,7 @@ var (
 		"sub", "name", "email", "iat", "exp", "jti",
 		"iss", "groups", "picture",
 		"roles", "role", "groups", "group",
+		"username",
 	}
 )
 
