@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 type userData struct {
@@ -230,6 +231,25 @@ func (b *Backend) fetchClaims(tokenData map[string]interface{}) (map[string]inte
 	m := make(map[string]interface{})
 	var userGroups []string
 	m["origin"] = userURL
+	
+	
+	if _, exists := data["username"]; exists {
+		switch v := data["username"].(type) {
+		case string:
+			m["username"] = v
+		}
+	} else if _, exists := data["user"]; exists {
+		switch v := data["user"].(type) {
+		case string:
+			m["username"] = v
+		}
+	} else if _, exists := data["login"]; exists {
+		switch v := data["login"].(type) {
+		case string:
+			m["username"] = v
+		}
+	}
+	
 	switch b.Config.Provider {
 	case "github":
 		if _, exists := data["login"]; exists {
@@ -343,5 +363,26 @@ func (b *Backend) fetchClaims(tokenData map[string]interface{}) (map[string]inte
 	if len(userGroups) > 0 {
 		m["groups"] = userGroups
 	}
+	if _, exists := m["username"]; !exists {
+		for _, possibleReplacement := range []string{"email", "mail", "name", "sub"} {
+			if _, exists := m[possibleReplacement]; exists {
+				m["username"] = filterStringReturningAZ09(m[possibleReplacement].(string))
+			}
+		}
+	}
 	return m, nil
 }
+
+
+func filterStringReturningAZ09(s string) string {
+    return strings.Map(
+        func(r rune) rune {
+	    if unicode.IsLetter(r) || unicode.IsNumber(r) {
+                return r
+            }
+            return -1
+        },
+        s,
+    )
+}
+
