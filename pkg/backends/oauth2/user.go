@@ -329,6 +329,12 @@ func (b *Backend) fetchClaims(tokenData map[string]interface{}) (map[string]inte
 				}
 			}
 		}
+
+		sub := m["sub"].(string)
+		if strings.ContainsRune(sub, '/') {
+			m["username"] = sub[strings.LastIndex(sub, "/")+1:]
+		}
+
 		b.logger.Debug(
 			"Extracted UserInfo endpoint data",
 			zap.String("backend_name", b.Config.Name),
@@ -347,28 +353,31 @@ func (b *Backend) fetchClaims(tokenData map[string]interface{}) (map[string]inte
 	}
 
 
-	if _, exists := data["username"]; exists {
-		switch v := data["username"].(type) {
-		case string:
-			m["username"] = v
-		}
-	} else if _, exists := data["user"]; exists {
-		switch v := data["user"].(type) {
-		case string:
-			m["username"] = v
-		}
-	} else if _, exists := data["login"]; exists {
-		switch v := data["login"].(type) {
-		case string:
-			m["username"] = v
-		}
-	} else {
-		for _, possibleReplacement := range []string{"email", "mail", "name", "sub"} {
-			if _, exists := m[possibleReplacement]; exists {
-				m["username"] = filterStringReturningAZ09(m[possibleReplacement].(string))
+	if _, usernameExists := m["username"]; !usernameExists {
+		if _, exists := data["username"]; exists {
+			switch v := data["username"].(type) {
+			case string:
+				m["username"] = v
+			}
+		} else if _, exists := data["user"]; exists {
+			switch v := data["user"].(type) {
+			case string:
+				m["username"] = v
+			}
+		} else if _, exists := data["login"]; exists {
+			switch v := data["login"].(type) {
+			case string:
+				m["username"] = v
+			}
+		} else {
+			for _, possibleReplacement := range []string{"email", "mail", "name", "sub"} {
+				if _, exists := m[possibleReplacement]; exists {
+					m["username"] = filterStringReturningAZ09(m[possibleReplacement].(string))
+				}
 			}
 		}
 	}
+
 	return m, nil
 }
 
